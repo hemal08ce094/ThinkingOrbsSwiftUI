@@ -5,7 +5,7 @@ description: Add Thinking Orbs, the SwiftUI port of the thinking-orbs npm librar
 
 # Add Thinking Orbs to a SwiftUI project
 
-Thinking Orbs are monochrome, dotted 3D loading indicators drawn with `Canvas` and `TimelineView`. The package is `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI`, product `ThinkingOrbs`, from `0.1.0`. It needs iOS 15, macOS 12, tvOS 15, watchOS 8 or visionOS 1, and has no dependencies. See `references/xcode-package.md` to wire it up.
+Thinking Orbs are monochrome, dotted 3D loading indicators drawn with `Canvas` and `TimelineView`. The package is `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI`, product `ThinkingOrbs`, from `0.2.0`. It needs iOS 15, macOS 12, tvOS 15, watchOS 8 or visionOS 1, and has no dependencies. See `references/xcode-package.md` to wire it up.
 
 ## 1. Preflight
 
@@ -27,13 +27,14 @@ ThinkingOrb(_ state: OrbState = .working,
             theme: OrbTheme = .auto,    // .auto follows colorScheme | .dark light-ink | .light dark-ink
             speed: Double = 1,          // multiplier on the preset's baked speed
             paused: Bool = false,       // freeze on the current frame
-            label: String? = nil)       // VoiceOver label; default is per state ("Searching…")
+            label: String? = nil,       // VoiceOver label; default is per state ("Searching…")
+            renderSize: CGFloat? = nil) // draw the design at a custom point size, sharply
 
 OrbCanvas(state:size:dark:t:)           // one frozen frame, for widgets, snapshots and ImageRenderer
 OrbEngine.frame(_:size:t:)              // raw z-sorted geometry (OrbFrame: dots + lines)
 ```
 
-The view has a fixed size (64×64 or 20×20) and a transparent background.
+The view has a fixed size (64×64, 20×20, or `renderSize`) and a transparent background.
 
 ## 4. Pick the state from what the app is actually doing
 
@@ -69,7 +70,7 @@ Keep the existing `if isLoading` conditions and accessibility labels. If the old
 ## 6. Gotchas
 
 - **Theme:** `.auto` follows the environment's `colorScheme`. If the orb sits on a surface whose brightness doesn't match the scheme (a dark card in light mode, say), pin `theme: .dark` or `.light`, or put `.environment(\.colorScheme, .dark)` on that surface.
-- **Other sizes:** there are only two tuned designs. For something like 32pt, use `.small` with `.scaleEffect(1.6)` or `.large` with `.scaleEffect(0.5)`. Don't redraw the dots yourself.
+- **Other sizes:** there are only two tuned designs. For something like 32pt or a 200pt voice-mode hero, pass `renderSize:` (for example, `ThinkingOrb(.listening, renderSize: 200)`). It redraws the nearest design sharply. Don't use `scaleEffect`, which blurs the dots, and don't redraw them yourself.
 - **Colour:** the dots are grayscale by design. To tint them, apply `.colorMultiply(.accentColor)` to a `theme: .dark` orb. Don't fork the painter.
 - **Transitions:** switching `state` swaps the geometry instantly. For a smooth change, wrap the swap in `.transition(.opacity)` with `.id(state)` and `withAnimation(.easeInOut(duration: 0.2))`.
 - **Lists:** each orb runs its own `TimelineView`. That's fine for a handful. In a long list, show orbs only on the rows that are actually in progress.

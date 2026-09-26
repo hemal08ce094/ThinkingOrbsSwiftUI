@@ -5,7 +5,12 @@ import ThinkingOrbs
 struct ThinkingOrbsDemoApp: App {
     var body: some Scene {
         WindowGroup {
-            DemoPage()
+            if let screen = UserDefaults.standard.string(forKey: "screen").flatMap(ShowcaseScreen.init) {
+                ShowcaseRouter(screen: screen)
+                    .preferredColorScheme(launchScheme)
+            } else {
+                DemoPage()
+            }
         }
     }
 }
@@ -64,7 +69,7 @@ struct DemoPage: View {
 }
 
 /// `-scheme dark|light` launch argument, for screenshots.
-private let launchScheme: ColorScheme? = {
+let launchScheme: ColorScheme? = {
     switch UserDefaults.standard.string(forKey: "scheme") {
     case "dark": .dark
     case "light": .light

@@ -23,6 +23,9 @@ public struct ThinkingOrb: View {
     public var speed: Double
     public var paused: Bool
     public var label: String?
+    /// Draw the tuned design at a custom point size (crisp, re-rasterised —
+    /// unlike `scaleEffect`). `nil` uses the preset's own 64 / 20pt.
+    public var renderSize: CGFloat?
 
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -36,14 +39,17 @@ public struct ThinkingOrb: View {
     ///   - speed: multiplier on the preset's baked speed.
     ///   - paused: freeze on the current frame.
     ///   - label: VoiceOver label; defaults to the per-state label ("Searching…").
+    ///   - renderSize: draw the chosen design at another point size, e.g. 128
+    ///     for a hero or 32 for a toolbar. Dots stay sharp.
     public init(_ state: OrbState = .working, size: OrbSize = .large, theme: OrbTheme = .auto,
-                speed: Double = 1, paused: Bool = false, label: String? = nil) {
+                speed: Double = 1, paused: Bool = false, label: String? = nil, renderSize: CGFloat? = nil) {
         self.state = state
         self.size = size
         self.theme = theme
         self.speed = speed
         self.paused = paused
         self.label = label
+        self.renderSize = renderSize
     }
 
     private var dark: Bool {
@@ -60,18 +66,18 @@ public struct ThinkingOrb: View {
         Group {
             if reduceMotion {
                 // one static, deterministic frame — same instant the web uses
-                OrbCanvas(state: state, size: size, dark: dark, t: 0.6)
+                OrbCanvas(state: state, size: size, dark: dark, t: 0.6, renderSize: renderSize)
             } else if paused {
                 OrbCanvas(state: state, size: size, dark: dark,
-                          t: (frozenAt ?? Date()).timeIntervalSince(orbEpoch) * effSpeed)
+                          t: (frozenAt ?? Date()).timeIntervalSince(orbEpoch) * effSpeed, renderSize: renderSize)
             } else {
                 TimelineView(.animation) { context in
                     OrbCanvas(state: state, size: size, dark: dark,
-                              t: context.date.timeIntervalSince(orbEpoch) * effSpeed)
+                              t: context.date.timeIntervalSince(orbEpoch) * effSpeed, renderSize: renderSize)
                 }
             }
         }
-        .frame(width: size.points, height: size.points)
+        .frame(width: renderSize ?? size.points, height: renderSize ?? size.points)
         .accessibilityElement()
         .accessibilityAddTraits(.isImage)
         .accessibilityLabel(Text(label ?? state.label))
@@ -103,20 +109,26 @@ public struct OrbCanvas: View {
     public var size: OrbSize
     public var dark: Bool
     public var t: Double
+    /// Point size to draw at; `nil` uses the preset's own size.
+    public var renderSize: CGFloat?
 
-    public init(state: OrbState, size: OrbSize = .large, dark: Bool, t: Double) {
+    public init(state: OrbState, size: OrbSize = .large, dark: Bool, t: Double, renderSize: CGFloat? = nil) {
         self.state = state
         self.size = size
         self.dark = dark
         self.t = t
+        self.renderSize = renderSize
     }
 
     public var body: some View {
         let frame = OrbEngine.frame(state, size: size, t: t)
-        Canvas { context, _ in
+        let side = renderSize ?? size.points
+        Canvas { context, canvasSize in
+            let k = canvasSize.width / size.points
+            if k != 1 { context.scaleBy(x: k, y: k) }
             OrbPainter.paint(frame, dark: dark, in: &context)
         }
-        .frame(width: size.points, height: size.points)
+        .frame(width: side, height: side)
     }
 }
 

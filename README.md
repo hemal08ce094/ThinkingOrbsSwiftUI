@@ -1,19 +1,53 @@
-# Thinking Orbs for SwiftUI
+<p align="center">
+  <img src="media/hero-dark.gif" width="420" alt="Thinking Orbs — nine animated AI thinking and loading indicators for SwiftUI: working, searching, solving, listening, connecting, weaving, composing, breathing, shaping">
+</p>
 
-Native SwiftUI port of [thinking-orbs](https://github.com/Jakubantalik/thinking-orbs) by Jakub Antalik: dotted thought-orb loading indicators for AI and agent UIs. It has nine hand-tuned animated states, each at two purpose-tuned sizes, drawn with `Canvas` and `TimelineView`. There's no Metal, no filters and no dependencies.
+<h1 align="center">Thinking Orbs for SwiftUI</h1>
 
-The geometry engine is a line-for-line transcription of the web engine. `swift test` checks every dot and line against golden vectors exported from the npm package (`thinking-orbs@0.3.2`): 72 cases, about 70,000 numbers, with a tolerance of 1e-4.
+<p align="center">
+  <b>Animated AI thinking &amp; loading indicators for iOS, macOS and visionOS.</b><br>
+  A drop-in SwiftUI replacement for <code>ProgressView</code> spinners and typing dots in AI chat, LLM, agent and voice-assistant apps.
+</p>
 
-| Dark | Light |
-|---|---|
-| ![dark](Demo/screenshot-dark.png) | ![light](Demo/screenshot-light.png) |
+<p align="center">
+  <img src="https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white" alt="Swift 5.9+">
+  <img src="https://img.shields.io/badge/platforms-iOS%2015%20%7C%20macOS%2012%20%7C%20visionOS%20%7C%20tvOS%20%7C%20watchOS-lightgrey" alt="Platforms">
+  <img src="https://img.shields.io/badge/SPM-compatible-brightgreen" alt="Swift Package Manager">
+  <img src="https://img.shields.io/badge/dependencies-0-blue" alt="Zero dependencies">
+  <img src="https://img.shields.io/github/license/hemal08ce094/ThinkingOrbsSwiftUI" alt="MIT license">
+</p>
+
+Thinking Orbs are dotted 3D animations that tell users *what* your AI is doing, not just that something is loading. There are nine states: working, searching, solving, listening, connecting, weaving, composing, breathing and shaping. Each one comes in two hand-tuned sizes, a 64pt avatar and a 20pt inline version. They're pure SwiftUI (`Canvas` and `TimelineView`), with no Metal, no Lottie files and no dependencies.
+
+This is a native port of [thinking-orbs](https://github.com/Jakubantalik/thinking-orbs) by Jakub Antalik. It's geometry-exact: `swift test` checks all ~70,000 dot coordinates against the original web engine.
+
+## Screenshots
+
+<p align="center">
+  <img src="media/screens.png" alt="SwiftUI AI chat app with a searching loading indicator, voice assistant listening animation, and AI agent task list with thinking orbs, in light and dark mode">
+</p>
+
+| AI chat (typing / thinking indicator) | AI agent progress | All nine states |
+|---|---|---|
+| <img src="media/chat-dark.gif" width="260" alt="SwiftUI AI chat typing indicator animation"> | <img src="media/agent-light.gif" width="260" alt="SwiftUI AI agent step progress indicators"> | <img src="media/hero-light.png" width="260" alt="Nine SwiftUI loading animations in light mode"> |
+
+## Features
+
+- **9 animated states** that map to real AI activity: web search, reasoning, voice input, tool calls, streaming a reply and more
+- **2 tuned sizes**: 64pt for an assistant avatar, 20pt for inline status text, plus crisp custom sizes via `renderSize`
+- **Dark and light mode**, following `colorScheme` automatically or pinned per view
+- **Accessible**: VoiceOver labels ("Searching…"), and a static frame when Reduce Motion is on
+- **Lightweight**: plain `Canvas` circle fills, pauses offscreen, every orb in sync on one shared clock
+- **Every Apple platform**: iOS 15+, macOS 12+, visionOS 1+, tvOS 15+, watchOS 8+
+- **Zero dependencies**, installed with Swift Package Manager
+- **Agent skill included**, so Claude Code can add the orbs to your app for you
 
 ## Install
 
-Swift Package Manager: `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI` on branch `main`, or from tag `0.1.0`.
+Swift Package Manager: `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI` on branch `main`, or from tag `0.2.0`.
 
 ```swift
-.package(url: "https://github.com/hemal08ce094/ThinkingOrbsSwiftUI", from: "0.1.0")
+.package(url: "https://github.com/hemal08ce094/ThinkingOrbsSwiftUI", from: "0.2.0")
 ```
 
 Requires iOS 15, macOS 12, tvOS 15, watchOS 8 or visionOS 1.
@@ -30,25 +64,43 @@ ThinkingOrb(.connecting, theme: .dark)        // pin light dots for a dark surfa
 ThinkingOrb(.composing, speed: 1.5)           // multiplier on the preset's baked speed
 ThinkingOrb(.shaping, paused: isIdle)         // freeze on the current frame
 ThinkingOrb(.listening, label: "Transcribing…") // VoiceOver label override
+ThinkingOrb(.listening, renderSize: 200)      // crisp hero size for a voice-mode screen
+```
+
+### Recipes
+
+```swift
+// "Thinking…" status pill in a chat
+HStack(spacing: 8) {
+    ThinkingOrb(.solving, size: .small)
+    Text("Thinking…").foregroundStyle(.secondary)
+}
+
+// Replace a typing-dots bubble while the LLM streams
+if isStreaming { ThinkingOrb(.composing, size: .small) }
+
+// Assistant avatar that reflects the current phase
+ThinkingOrb(phase == .search ? .searching : .solving)
+    .background(.quaternary, in: Circle())
 ```
 
 ### States
 
-| State | Animation |
-|---|---|
-| `.working` | particles on tilted orbits |
-| `.searching` | a scan meridian sweeps a dotted globe |
-| `.solving` | bands scramble, then click back solved |
-| `.listening` | a waveform rolls through the rings |
-| `.connecting` | a constellation wires itself |
-| `.weaving` | three strands plait around the sphere |
-| `.composing` | an undulating multi-band sash |
-| `.breathing` | a ring slowly morphing |
-| `.shaping` | dotted outline: circle → triangle → square |
+| State | Animation | Use it for |
+|---|---|---|
+| `.working` | particles on tilted orbits | general agent work, tool calls, background tasks |
+| `.searching` | a scan meridian sweeps a dotted globe | web search, RAG retrieval, document lookup |
+| `.solving` | bands scramble, then click back solved | reasoning, "thinking…", planning, code analysis |
+| `.listening` | a waveform rolls through the rings | voice input, dictation, speech-to-text |
+| `.connecting` | a constellation wires itself | connecting to APIs, syncing, integrations |
+| `.weaving` | three strands plait around the sphere | merging sources, multi-step pipelines |
+| `.composing` | an undulating multi-band sash | streaming an LLM reply, writing, typing indicator |
+| `.breathing` | a ring slowly morphing | idle "thinking" presence, waiting |
+| `.shaping` | dotted outline: circle → triangle → square | image or layout generation |
 
 ### Sizes
 
-`.large` (64pt) is for chat-avatar scale and `.small` (20pt) is for inline text. They are separate designs, each with its own dot count, dot size and speed, not one design scaled. To get another size, scale the nearest preset with `.scaleEffect`.
+`.large` (64pt) is for chat-avatar scale and `.small` (20pt) is for inline text. They are separate designs, each with its own dot count, dot size and speed, not one design scaled. For any other size, pass `renderSize:`. It redraws the nearest design sharply, where `scaleEffect` would blur it.
 
 ### Theme
 
@@ -75,7 +127,19 @@ let resolved = resolvePreset(.searching, .large)  // mode, speed, scaled opts
 
 ## Demo
 
-Open `Demo/ThinkingOrbsDemo.xcodeproj` (iOS 17, macOS 14, visionOS). It has hero chat pills, a gallery of all states at both sizes, and a playground with state, size, speed and play/pause controls. Pass `-scheme dark` or `-scheme light` as a launch argument to force the appearance.
+Open `Demo/ThinkingOrbsDemo.xcodeproj` (iOS 17, macOS 14, visionOS). It has hero chat pills, a gallery of all states at both sizes, and a playground with state, size, speed and play/pause controls. Launch arguments: `-scheme dark|light` forces the appearance, and `-screen chat|voice|agent|hero` opens the sample screens shown above.
+
+## FAQ
+
+**How do I make an AI "thinking" animation in SwiftUI?** Add the package, then use `ThinkingOrb(.solving)`. Pick the state that matches what your model is doing. See the States table.
+
+**Can it replace a typing indicator in a chat app?** Yes. `ThinkingOrb(.composing, size: .small)` fits inside a message bubble.
+
+**Does it work with UIKit?** Yes. Wrap it in a `UIHostingController`.
+
+**Can I tint it?** The design is monochrome. For a tint, apply `.colorMultiply(.accentColor)` to a `theme: .dark` orb.
+
+**Is it heavy?** No. Even the densest state draws under 600 circles per frame, and orbs stop animating when offscreen.
 
 ## Keeping parity with upstream
 

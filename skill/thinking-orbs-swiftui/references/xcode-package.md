@@ -1,12 +1,12 @@
 # Wiring the ThinkingOrbs package
 
-Package URL: `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI`, product `ThinkingOrbs`, versions from `0.1.0`.
+Package URL: `https://github.com/hemal08ce094/ThinkingOrbsSwiftUI`, product `ThinkingOrbs`, versions from `0.2.0`.
 
 ## Swift package manifest
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hemal08ce094/ThinkingOrbsSwiftUI", from: "0.1.0"),
+    .package(url: "https://github.com/hemal08ce094/ThinkingOrbsSwiftUI", from: "0.2.0"),
 ],
 targets: [
     .target(name: "App", dependencies: [.product(name: "ThinkingOrbs", package: "ThinkingOrbsSwiftUI")]),
