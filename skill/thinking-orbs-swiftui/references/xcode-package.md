@@ -48,7 +48,7 @@ At the end of `objects`:
 			repositoryURL = "https://github.com/hemal08ce094/ThinkingOrbsSwiftUI";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.0;
+				minimumVersion = 0.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
