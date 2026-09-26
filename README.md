@@ -2,7 +2,36 @@
 
 Dotted thought-orb loading indicators for AI & agent UIs. Nine hand-tuned animated states, each shipped at two purpose-tuned sizes, rendered on a plain 2D canvas — no WebGL, no filters, works identically in Chrome, Safari and Firefox.
 
-[Live demo](https://orbs.jakubantalik.com) · [Repository](https://github.com/Jakubantalik/thinking-orbs) · [Report an issue](https://github.com/Jakubantalik/thinking-orbs/issues)
+<p align="center">
+  <img src="media/demo.gif" width="720" alt="thinking-orbs demo: animated dotted thought-orb loading indicators (solving, thinking, searching, working, listening, planning, shaping) in chat-style status pills">
+</p>
+
+**[Live demo on this fork](https://hemal08ce094.github.io/thinking-orbs/)** · [Original demo](https://orbs.jakubantalik.com) · [Upstream repository](https://github.com/Jakubantalik/thinking-orbs) · [SwiftUI port](https://github.com/hemal08ce094/ThinkingOrbsSwiftUI)
+
+> This is a fork of [Jakubantalik/thinking-orbs](https://github.com/Jakubantalik/thinking-orbs). It adds a demo hosted on GitHub Pages, screenshots, and a link to the native SwiftUI port. The library itself is unchanged.
+
+## Demo
+
+| Examples | Playground |
+|---|---|
+| <img src="media/demo-home.png" width="420" alt="thinking-orbs demo page with status pills for each orb state"> | <img src="media/demo-playground.png" width="420" alt="thinking-orbs playground with state, size and speed controls"> |
+
+Run it locally:
+
+```bash
+git clone https://github.com/hemal08ce094/thinking-orbs
+cd thinking-orbs
+npm install
+npm run dev        # http://localhost:5177
+```
+
+`demo/simple.html` is a minimal single-orb page, and `demo/parity.html` is the frozen-time capture harness used to check the native ports.
+
+### Native iOS / macOS: SwiftUI
+
+The same nine orbs, geometry-exact with this engine, as a Swift package: [ThinkingOrbsSwiftUI](https://github.com/hemal08ce094/ThinkingOrbsSwiftUI).
+
+<img src="media/swiftui-screens.png" alt="ThinkingOrbs SwiftUI port running in an iOS chat app, voice mode and agent task list">
 
 ## Install
 

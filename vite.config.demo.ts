@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: resolve(__dirname, 'demo'),
+  // GitHub Pages serves this fork at /thinking-orbs/; DEMO_BASE sets that in CI.
+  base: process.env.DEMO_BASE ?? '/',
   plugins: [react(), tailwindcss()],
   server: { port: 5177 },
   resolve: {
