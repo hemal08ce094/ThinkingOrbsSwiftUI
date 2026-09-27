@@ -7,7 +7,17 @@ import SwiftUI
 
 /// Shared epoch — the web's `performance.now()`. Every orb reads the same
 /// clock, so two orbs of the same state animate in lockstep.
+///
+/// A file-scope `let` is initialised lazily, on first read, i.e. inside the
+/// first orb's `TimelineView` closure: *after* that frame's `context.date`
+/// was taken. The very first `t` is therefore a few microseconds negative
+/// (the wall clock can also step backwards). Always read time through
+/// `orbTime(_:)`, which clamps it to >= 0.
 private let orbEpoch = Date()
+
+@inline(__always) private func orbTime(_ date: Date) -> Double {
+    max(0, date.timeIntervalSince(orbEpoch))
+}
 
 /// A dotted thought-orb loading indicator.
 ///
@@ -69,11 +79,11 @@ public struct ThinkingOrb: View {
                 OrbCanvas(state: state, size: size, dark: dark, t: 0.6, renderSize: renderSize)
             } else if paused {
                 OrbCanvas(state: state, size: size, dark: dark,
-                          t: (frozenAt ?? Date()).timeIntervalSince(orbEpoch) * effSpeed, renderSize: renderSize)
+                          t: orbTime(frozenAt ?? Date()) * effSpeed, renderSize: renderSize)
             } else {
                 TimelineView(.animation) { context in
                     OrbCanvas(state: state, size: size, dark: dark,
-                              t: context.date.timeIntervalSince(orbEpoch) * effSpeed, renderSize: renderSize)
+                              t: orbTime(context.date) * effSpeed, renderSize: renderSize)
                 }
             }
         }

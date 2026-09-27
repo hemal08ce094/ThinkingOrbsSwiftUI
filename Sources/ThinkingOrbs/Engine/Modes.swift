@@ -134,7 +134,10 @@ public enum OrbEngine {
         var amount = [Double](repeating: 0, count: count)
         var active = -1
         if tc < 2 * Double(count) * slotDur {
-            let slot = Int(floor(tc / slotDur))
+            // Clamp: `jsMod` keeps the dividend's sign, so a negative `time`
+            // gave slot -1 and trapped in `0..<slot`; the upper bound guards
+            // floating-point rounding at the wrap boundary.
+            let slot = min(2 * count - 1, max(0, Int(floor(tc / slotDur))))
             let p = (tc - Double(slot) * slotDur) / slotDur
             let cl = min(1, p / 0.7)
             let ep = 1 - pow(1 - cl, 3)
@@ -467,10 +470,9 @@ public enum OrbEngine {
         let seg = hold + morphDur
         let K = shapeCycle.count
         let tc = jsMod(t, seg * Double(K))
-        // `t` is a huge absolute wall-clock value, so `tc` can round to
-        // exactly `seg * K` at the wrap boundary (floating-point rounding
-        // in `truncatingRemainder`), which floors to `k == K` — one past
-        // the end of `shapeCycle`. Clamp defensively instead of trapping.
+        // Clamp defensively instead of trapping: `jsMod` keeps the sign of
+        // a negative `t` (k == -1), and floating-point rounding at the wrap
+        // boundary could floor to `k == K`.
         let k = min(K - 1, max(0, Int(floor(tc / seg))))
         let local = tc - Double(k) * seg
         let m: Double = {
