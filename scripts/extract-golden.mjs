@@ -1,7 +1,8 @@
 // Regenerates Tests/ThinkingOrbsTests/golden.json from the published
 // thinking-orbs engine (npm), mirroring upstream scripts/extract-golden.ts.
-// Run from a folder where `npm install thinking-orbs` has been done:
-//   node scripts/extract-golden.mjs /path/to/node_modules/thinking-orbs
+// Point it at a built copy of the engine: the npm package, or this repo's
+// web/ folder after `cd web && npm ci && npm run build`:
+//   node scripts/extract-golden.mjs web
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';

@@ -19,7 +19,9 @@
 
 Thinking Orbs are dotted 3D animations that tell users *what* your AI is doing, not just that something is loading. There are nine states: working, searching, solving, listening, connecting, weaving, composing, breathing and shaping. Each one comes in two hand-tuned sizes, a 64pt avatar and a 20pt inline version. They're pure SwiftUI (`Canvas` and `TimelineView`), with no Metal, no Lottie files and no dependencies.
 
-This is a native port of [thinking-orbs](https://github.com/Jakubantalik/thinking-orbs) by Jakub Antalik. It's geometry-exact: `swift test` checks all ~70,000 dot coordinates against the original web engine.
+This is a native port of [thinking-orbs](https://github.com/Jakubantalik/thinking-orbs) by Jakub Antalik. It's geometry-exact: `swift test` checks all ~70,000 dot coordinates against the original web engine, which lives in this repo under [`web/`](web/).
+
+**[Live web demo](https://hemal08ce094.github.io/ThinkingOrbsSwiftUI/)** · [Original demo](https://orbs.jakubantalik.com)
 
 ## Screenshots
 
@@ -129,6 +131,15 @@ let resolved = resolvePreset(.searching, .large)  // mode, speed, scaled opts
 
 Open `Demo/ThinkingOrbsDemo.xcodeproj` (iOS 17, macOS 14, visionOS). It has hero chat pills, a gallery of all states at both sizes, and a playground with state, size, speed and play/pause controls. Launch arguments: `-scheme dark|light` forces the appearance, and `-screen chat|voice|agent|hero` opens the sample screens shown above.
 
+## Web library (`web/`)
+
+[`web/`](web/) holds the original TypeScript/React library, the reference this port is checked against. It includes:
+- the live demo (deployed to GitHub Pages from `.github/workflows/pages.yml`);
+- the frozen-time parity harness (`web/demo/parity.html`);
+- a React Native (Skia) port in `web/ports/react-native`.
+
+To run it: `cd web && npm install && npm run dev`. The web package is published on npm by its author as [`thinking-orbs`](https://www.npmjs.com/package/thinking-orbs). This repo doesn't publish it.
+
 ## FAQ
 
 **How do I make an AI "thinking" animation in SwiftUI?** Add the package, then use `ThinkingOrb(.solving)`. Pick the state that matches what your model is doing. See the States table.
@@ -144,8 +155,8 @@ Open `Demo/ThinkingOrbsDemo.xcodeproj` (iOS 17, macOS 14, visionOS). It has hero
 ## Keeping parity with upstream
 
 ```sh
-npm install thinking-orbs            # anywhere; the script defaults to ~/node_modules
-node scripts/extract-golden.mjs      # rewrites Tests/ThinkingOrbsTests/golden.json
+(cd web && npm ci && npm run build)  # builds the engine in web/dist
+node scripts/extract-golden.mjs web  # rewrites Tests/ThinkingOrbsTests/golden.json
 swift test
 ```
 
