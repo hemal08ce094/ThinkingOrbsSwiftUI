@@ -467,7 +467,11 @@ public enum OrbEngine {
         let seg = hold + morphDur
         let K = shapeCycle.count
         let tc = jsMod(t, seg * Double(K))
-        let k = Int(floor(tc / seg))
+        // `t` is a huge absolute wall-clock value, so `tc` can round to
+        // exactly `seg * K` at the wrap boundary (floating-point rounding
+        // in `truncatingRemainder`), which floors to `k == K` — one past
+        // the end of `shapeCycle`. Clamp defensively instead of trapping.
+        let k = min(K - 1, max(0, Int(floor(tc / seg))))
         let local = tc - Double(k) * seg
         let m: Double = {
             guard local > hold else { return 0 }
